@@ -1,9 +1,8 @@
-import Email from "@node_modules/next-auth/providers/email";
-import { unique } from "@node_modules/next/dist/build/utils";
+
 import { Schema, model , models } from "mongoose";
 
 
-const UserSchema = newSchema ({
+const UserSchema = new Schema({
     email : {
         type : String,
         unique : [true, "Email already exists"],
@@ -22,6 +21,6 @@ const UserSchema = newSchema ({
     }
 });
 
-const User = model.User || model("User", UserSchema);
+const User = models.User || model("User", UserSchema);
 
 export default User;
