@@ -6,8 +6,9 @@ import { useRouter } from 'next/navigation'
 import Form from '@components/Form'
 
 const CreatePrompt = () => {
-  const { data: session } = useSession(); // Added session destructuring
-  const router = useRouter(); // Fixed Router variable name
+  
+  const router = useRouter();
+  const {data:session} = useSession();
   
   const [submitting, setSubmitting] = useState(false)
   const [post, setPost] = useState({
