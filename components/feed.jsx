@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import PromptCard from "./PromptCard";
 
 const PromptCardList = ({ data, handleTagClick }) => {
-  // Ensure data is always an array
   const postsArray = Array.isArray(data) ? data : [];
   
   return (
@@ -18,7 +17,7 @@ const PromptCardList = ({ data, handleTagClick }) => {
           />
         ))
       ) : (
-        <p>No prompts available</p>
+        <p>No prompts found.</p>
       )}
     </div>
   );
@@ -27,9 +26,56 @@ const PromptCardList = ({ data, handleTagClick }) => {
 const Feed = () => {
   const [searchText, setSearchText] = useState('');
   const [posts, setPosts] = useState([]);
+  const [filteredPosts, setFilteredPosts] = useState([]);
+  const [searchTimeout, setSearchTimeout] = useState(null);
   
   const handleSearchChange = (e) => {
-    setSearchText(e.target.value);
+    clearTimeout(searchTimeout);
+    const searchQuery = e.target.value;
+    setSearchText(searchQuery);
+    
+    // Debounce search for better performance
+    setSearchTimeout(
+      setTimeout(() => {
+        filterPosts(searchQuery);
+      }, 300)
+    );
+  };
+  
+  // Function to filter posts based on search query
+  const filterPosts = (searchQuery) => {
+    const query = searchQuery.toLowerCase().trim();
+    
+    if (!query) {
+      // If search is empty, show all posts
+      setFilteredPosts(posts);
+      return;
+    }
+    
+    // Filter posts by prompt content, tag, or username
+    const filtered = posts.filter(
+      (post) => 
+        post.prompt.toLowerCase().includes(query) ||
+        post.tag.toLowerCase().includes(query) ||
+        post.creator.username.toLowerCase().includes(query)
+    );
+    
+    setFilteredPosts(filtered);
+  };
+  
+  // Enhanced tag click function to better highlight the search
+  const handleTagClick = (tagName) => {
+    // Remove the # symbol if it exists
+    const tag = tagName.startsWith('#') ? tagName.substring(1) : tagName;
+    
+    // Set the search text with the tag
+    setSearchText(tag);
+    
+    // Filter the posts immediately
+    filterPosts(tag);
+    
+    // Visual feedback - focus on search input
+    document.querySelector('.search_input').focus();
   };
 
   useEffect(() => {
@@ -38,16 +84,18 @@ const Feed = () => {
         const response = await fetch('/api/prompt');
         const data = await response.json();
         
-        // Make sure data is an array
         if (Array.isArray(data)) {
           setPosts(data);
+          setFilteredPosts(data); // Initially show all posts
         } else {
           console.error("API did not return an array:", data);
           setPosts([]);
+          setFilteredPosts([]);
         }
       } catch (error) {
         console.error("Failed to fetch posts:", error);
         setPosts([]);
+        setFilteredPosts([]);
       }
     };
     
@@ -59,17 +107,16 @@ const Feed = () => {
       <form className="relative w-full flex-center">
         <input 
           type="text"
-          placeholder="Search for a tag or a username"
+          placeholder="Search for a tag, username, or prompt content"
           value={searchText}
           onChange={handleSearchChange}
-          required
           className="search_input peer"
         />
       </form>
 
       <PromptCardList
-        data={posts}
-        handleTagClick={() => {}}
+        data={filteredPosts}
+        handleTagClick={handleTagClick}
       />
     </section>
   );

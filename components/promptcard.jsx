@@ -1,4 +1,4 @@
-// components/promptcard.jsx
+// components/PromptCard.jsx
 'use client';
 
 import { useState } from 'react';
@@ -18,11 +18,27 @@ const PromptCard = ({ post, handleEdit, handleDelete, handleTagClick }) => {
     navigator.clipboard.writeText(post.prompt);
     setTimeout(() => setCopied(''), 3000);
   };
+  
+  // Add function to navigate to user profile
+  const handleProfileClick = () => {
+    // Don't navigate if already on the user's profile
+    if (pathName === `/profile/${post.creator._id}`) return;
+    
+    // Don't navigate to own profile this way
+    if (session?.user.id === post.creator._id) {
+      router.push('/profile');
+    } else {
+      router.push(`/profile/${post.creator._id}`);
+    }
+  };
 
   return (
     <div className='prompt_card'>
       <div className='flex justify-between items-start gap-5'>
-        <div className='flex-1 flex justify-start items-center gap-3 cursor-pointer'>
+        <div 
+          className='flex-1 flex justify-start items-center gap-3 cursor-pointer'
+          onClick={handleProfileClick}
+        >
           <Image
             src={post.creator.image}
             alt='user_image'
