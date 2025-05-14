@@ -3,14 +3,14 @@ import Nav from '@components/Nav'
 import Provider from '@components/provider'
 
 export const metadata = {
-    title : "Promptopia",
-    description : 'Discover & Share AI Prompts'
+    title: "Promptopia",
+    description: 'Discover & Share AI Prompts'
 }
 
 const RootLayout = ({children}) => {
   return (
     <html lang="en">
-        <body>
+        <body suppressHydrationWarning={true}>
             <Provider>
                 <div className='main'>
                     <div className='gradient'>
@@ -18,7 +18,7 @@ const RootLayout = ({children}) => {
                 </div>
                 <main className='app'>
                     <Nav/>
-                {children}
+                    {children}
                 </main>
             </Provider>
         </body>

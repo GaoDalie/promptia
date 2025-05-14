@@ -1,7 +1,8 @@
 import NextAuth from "next-auth";
 import GoogleProvider from 'next-auth/providers/google';
 import User from "@models/user";
-import { connectTODB } from "@utils/database";
+// Fix the import to use connectToDB instead of connectTODB
+import { connectToDB } from "@utils/database";
 
 console.log("Auth route loading");
 
@@ -20,7 +21,8 @@ const handler = NextAuth({
         async session({ session }) {
             console.log("Session callback called", session?.user?.email);
             try {
-                await connectTODB();
+                // Use the correct function name here
+                await connectToDB();
                 const sessionUser = await User.findOne({ email: session.user.email });
                 if (sessionUser) {
                     session.user.id = sessionUser._id.toString();
@@ -38,7 +40,8 @@ const handler = NextAuth({
         async signIn({ profile }) {
             console.log("SignIn callback called", profile?.email);
             try {
-                await connectTODB();
+                // Use the correct function name here too
+                await connectToDB();
                 
                 // check if a user already exists
                 const userExists = await User.findOne({

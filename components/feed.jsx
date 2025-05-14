@@ -4,15 +4,22 @@ import { useState, useEffect } from "react";
 import PromptCard from "./PromptCard";
 
 const PromptCardList = ({ data, handleTagClick }) => {
+  // Ensure data is always an array
+  const postsArray = Array.isArray(data) ? data : [];
+  
   return (
     <div className="mt-16 prompt_layout">
-      {data.map((post) => (
-        <PromptCard
-          key={post._id}
-          post={post}
-          handleTagClick={handleTagClick}
-        />
-      ))}
+      {postsArray.length > 0 ? (
+        postsArray.map((post) => (
+          <PromptCard
+            key={post._id}
+            post={post}
+            handleTagClick={handleTagClick}
+          />
+        ))
+      ) : (
+        <p>No prompts available</p>
+      )}
     </div>
   );
 };
@@ -30,9 +37,17 @@ const Feed = () => {
       try {
         const response = await fetch('/api/prompt');
         const data = await response.json();
-        setPosts(data);
+        
+        // Make sure data is an array
+        if (Array.isArray(data)) {
+          setPosts(data);
+        } else {
+          console.error("API did not return an array:", data);
+          setPosts([]);
+        }
       } catch (error) {
         console.error("Failed to fetch posts:", error);
+        setPosts([]);
       }
     };
     

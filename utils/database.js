@@ -2,7 +2,8 @@ import mongoose from "mongoose";
 
 let isConnected = false;
 
-export const connectTODB = async () => {
+// Fix the function name from connectTODB to connectToDB
+export const connectToDB = async () => {
     mongoose.set('strictQuery', true)
 
     if(isConnected){
@@ -13,13 +14,12 @@ export const connectTODB = async () => {
     try {
         await mongoose.connect(process.env.MONGODB_URI, {
             dbName: "share_prompt"
-            // Remove these deprecated options:
-            // userNewURLParser: true,  <- misspelled and deprecated
-            // useUnifiedTopology: true <- deprecated
         })
         isConnected = true;
         console.log('MongoDB connected')
     } catch (error) {
-      console.log(error)
+        console.log(error)
+        // Re-throw the error so the API knows the connection failed
+        throw error;
     }
 }
